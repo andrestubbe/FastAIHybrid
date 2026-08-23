@@ -14,6 +14,10 @@
 
 [![FastAIHybrid Showcase](docs/screenshot.png)](docs/screenshot.png)
 
+<p align="center">
+  <img src="docs/hybrid_pipeline.jpg" alt="FastAIHybrid Architecture Pipeline" width="850">
+</p>
+
 ---
 
 ## Quick Start
