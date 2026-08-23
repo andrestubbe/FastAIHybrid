@@ -94,10 +94,34 @@ FastAIHybrid is rigorously profiled using **JMH** to guarantee zero overhead:
 
 | Metric / Hot-Path Operation | Score (ops/ms) | Ops per Second |
 |-----------------------------|----------------|----------------|
-| **RRF List Fusion (100 items)** | ~2,150 ops/ms | > 2.15 Million |
-| **Dual-Rank Merge**             | ~3,940 ops/ms | > 3.94 Million |
+| **Reciprocal Rank Fusion (100 candidates)** | ~98.4 ops/ms | > 98,400 ops/sec |
+| **Rank Fusion Top-10 Selection**            | ~1,450 ops/ms | > 1.45 Million |
 
 *Measured on Windows 11, Intel Core i5-1135G7 (Surface Pro 8), JDK 21.0.12.*
+
+---
+
+## API Reference
+
+### Real-World Production Patterns
+
+#### 1. Hybrid Code & Identifier Search (BM25 + Semantic)
+```java
+// Balance exact method names/IDs with conceptual questions
+List<Hit> lexicalMatches = bm25Index.search("FastAI.stream");
+List<Hit> vectorMatches = vectorDb.search(embeddingVector, 20);
+
+// Combine both spaces into a single balanced top-5 list
+List<Hit> fused = FastAIHybrid.fuse(lexicalMatches, vectorMatches, 5, 60);
+```
+
+#### 2. Graph & Vector Context Merging
+```java
+// Fuse structured knowledge graph relations with unstructured text chunks
+List<Hit> graphHits = graph.queryHits("FastAIGraph");
+List<Hit> textHits = vectorDb.search(queryVector, 10);
+List<Hit> finalContext = FastAIHybrid.fuse(graphHits, textHits, 4, 60);
+```
 
 ---
 
@@ -114,6 +138,7 @@ FastAIHybrid is rigorously profiled using **JMH** to guarantee zero overhead:
 | Case | Java Example | Launcher | Description |
 |---|---|---|---|
 | **Hybrid Fusion Demo** | [Demo.java](examples/Demo/src/main/java/fastaihybrid/Demo.java) | `run-demo.bat` | Interactive CLI demo merging BM25 and vector search results. |
+| **JMH Microbenchmarks** | [FastAIHybridBenchmark.java](examples/Benchmark/src/main/java/fastaihybrid/FastAIHybridBenchmark.java) | `run-benchmark.bat` | JMH throughput benchmark for Reciprocal Rank Fusion. |
 
 ---
 
