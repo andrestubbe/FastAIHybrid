@@ -140,7 +140,7 @@ List<Hit> finalContext = FastAIHybrid.fuse(graphHits, textHits, 4, 60);
 | Case | Java Example | Launcher | Description |
 |---|---|---|---|
 | **Hybrid Fusion Demo** | [Demo.java](examples/Demo/src/main/java/fastaihybrid/Demo.java) | `run-demo.bat` | Interactive CLI demo merging BM25 and vector search results. |
-| **JMH Microbenchmarks** | [FastAIHybridBenchmark.java](examples/Benchmark/src/main/java/fastaihybrid/FastAIHybridBenchmark.java) | `run-benchmark.bat` | JMH throughput benchmark for Reciprocal Rank Fusion. |
+| **JMH Microbenchmarks** | [Benchmark.java](examples/Benchmark/src/main/java/fastaihybrid/Benchmark.java) | `run-benchmark.bat` | JMH throughput benchmark for Reciprocal Rank Fusion. |
 
 ---
 
