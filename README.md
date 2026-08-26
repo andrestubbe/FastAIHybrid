@@ -27,7 +27,7 @@ import fastaihybrid.FastAIHybrid;
 import fastaihybrid.FastAIHybrid.Hit;
 import java.util.List;
 
-public class Example {
+public class Demo {
     public static void main(String[] args) {
         // 1. Sparse Lexical Search Results (e.g. BM25 / Keyword)
         List<Hit> lexical = List.of(
@@ -56,11 +56,13 @@ public class Example {
 
 - [Why FastAIHybrid?](#why-fastaihybrid)
 - [Quick Start](#quick-start)
-- [Features](#features)
+- [Key Features](#key-features)
 - [Performance Benchmarks](#performance-benchmarks)
+- [API Reference](#api-reference)
 - [API Quick Reference](#api-quick-reference)
 - [Technical Examples & Hero Demos](#technical-examples--hero-demos)
 - [Installation](#installation)
+- [Documentation](#documentation)
 - [Platform Support](#platform-support)
 - [License](#license)
 - [Related Projects](#related-projects)
@@ -80,7 +82,7 @@ Dense vector embeddings struggle with exact keywords, IDs, and domain-specific a
 
 ---
 
-## Features
+## Key Features
 
 - **🔀 Deterministic RRF Fusion**: Combines sparse and dense score spaces effortlessly.
 - **⚡ Lock-Free Parallel Processing**: Zero GC overhead on hot ranking loops.
@@ -157,9 +159,17 @@ Add the JitPack repository and the dependency to your `pom.xml`:
 </repositories>
 
 <dependencies>
+    <!-- FastAIHybrid Library -->
     <dependency>
         <groupId>com.github.andrestubbe</groupId>
         <artifactId>FastAIHybrid</artifactId>
+        <version>0.1.0</version>
+    </dependency>
+
+    <!-- FastCore (Mandatory Native Loader) -->
+    <dependency>
+        <groupId>com.github.andrestubbe</groupId>
+        <artifactId>FastCore</artifactId>
         <version>0.1.0</version>
     </dependency>
 </dependencies>
@@ -174,14 +184,26 @@ repositories {
 
 dependencies {
     implementation 'com.github.andrestubbe:FastAIHybrid:0.1.0'
+    implementation 'com.github.andrestubbe:FastCore:0.1.0'
 }
 ```
 
 ### Option 3: Direct Download (No Build Tool)
 
-Download the latest JAR directly to add it to your classpath:
+Download the latest JARs directly to add them to your classpath:
 
 1. 📦 **[FastAIHybrid-0.1.0.jar](https://github.com/andrestubbe/FastAIHybrid/releases/download/0.1.0/FastAIHybrid-0.1.0.jar)** (The Core Library)
+2. ⚙️ **[fastcore-0.1.0.jar](https://github.com/andrestubbe/FastCore/releases/download/0.1.0/fastcore-0.1.0.jar)** (The Mandatory Native Loader)
+
+---
+
+## Documentation
+
+* **[REFERENCE.md](docs/REFERENCE.md)**: Core API reference manual.
+* **[PHILOSOPHY.md](docs/PHILOSOPHY.md)**: Multi-modal fusion and Reciprocal Rank Fusion rationale.
+* **[COMPILE.md](docs/COMPILE.md)**: Build instructions.
+* **[CHANGELOG.md](docs/CHANGELOG.md)**: Project history and releases.
+* **[ROADMAP.md](docs/ROADMAP.md)**: Future milestones.
 
 ---
 
