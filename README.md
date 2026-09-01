@@ -1,3 +1,6 @@
+> [!WARNING]
+> **🚧 WIP — Active AI Pipeline Construction & Architecture Optimization in Progress.**
+
 # FastAIHybrid 0.1.0 — Multi-Modal & Dense-Sparse Hybrid Search Fusion for Java
 
 [![Status](https://img.shields.io/badge/status-0.1.0-brightgreen.svg)](https://github.com/andrestubbe/FastAIHybrid/releases/tag/0.1.0)
