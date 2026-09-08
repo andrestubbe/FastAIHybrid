@@ -15,7 +15,7 @@
 
 **FastAIHybrid** merges keyword retrieval (BM25, identifiers, specific terms) and neural vector retrieval (`FastAIVectorDB`) into a single, unified high-relevance rank list with zero external Elasticsearch or heavy Lucene dependencies.
 
-[Watch Demo (YouTube)] | [Watch JMH Benchmark (Youtube)]
+Watch Demo (YouTube) | Watch JMH Benchmark (Youtube)
 
 [![FastAIHybrid Showcase](docs/screenshot.png)](docs/screenshot.png)
 
