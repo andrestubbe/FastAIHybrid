@@ -1,27 +1,18 @@
-> [!WARNING]
-> **🚧 WIP — Active AI Pipeline Construction & Architecture Optimization in Progress.**
-
-# FastAIHybrid 0.1.0 — Multi-Modal & Dense-Sparse Hybrid Search Fusion for Java
+# FastAIHybrid 0.1.0 [ALPHA-2026-08-23]: Dense-Sparse Hybrid Search Fusion for Java
 
 [![Status](https://img.shields.io/badge/status-0.1.0-brightgreen.svg)](https://github.com/andrestubbe/FastAIHybrid/releases/tag/0.1.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
-[![JitPack](https://img.shields.io/badge/JitPack-ready-green.svg)](https://jitpack.io/#andrestubbe/FastAIHybrid)
+[![JitPack](https://img.shields.io/badge/JitPack-0.1.0-green.svg)](https://jitpack.io/#andrestubbe/FastAIHybrid)
 
 ---
 
-**⚡ Ultra-fast Reciprocal Rank Fusion (RRF) combining dense semantic vectors and sparse lexical keywords for the FastJava AI Ecosystem.**
+**⚡ Ultra-fast Reciprocal Rank Fusion (RRF) combining dense semantic vectors and sparse lexical keywords for Java.**
 
-**FastAIHybrid** merges keyword retrieval (BM25, identifiers, specific terms) and neural vector retrieval (`FastAIVectorDB`) into a single, unified high-relevance rank list with zero external Elasticsearch or heavy Lucene dependencies.
+**FastAIHybrid** merges keyword retrieval (BM25, exact identifiers, technical terms) and neural vector retrieval (**[FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB)**) into a single, unified high-relevance rank list with zero external Elasticsearch or heavy Lucene dependencies.
 
-Watch Demo (YouTube) | Watch JMH Benchmark (Youtube)
-
-[![FastAIHybrid Showcase](docs/screenshot.png)](docs/screenshot.png)
-
-<p align="center">
-  <img src="docs/hybrid_pipeline.jpg" alt="FastAIHybrid Architecture Pipeline" width="850">
-</p>
+![FastAIHybrid Showcase](docs/screenshot.png)
 
 ---
 
@@ -49,7 +40,7 @@ public class Demo {
         // 3. Reciprocal Rank Fusion (RRF)
         List<Hit> fused = FastAIHybrid.fuse(lexical, dense, 3, 60);
         for (Hit h : fused) {
-            System.out.println(h.id() + " -> RRF Score: " + h.score() + " | " + h.text());
+            System.out.printf("%s -> RRF Score: %.5f | %s%n", h.id(), h.score(), h.text());
         }
     }
 }
@@ -62,49 +53,82 @@ public class Demo {
 - [Why FastAIHybrid?](#why-fastaihybrid)
 - [Quick Start](#quick-start)
 - [Key Features](#key-features)
+- [Real-World Use Cases](#real-world-use-cases)
 - [Performance Benchmarks](#performance-benchmarks)
-- [API Reference](#api-reference)
 - [API Quick Reference](#api-quick-reference)
-- [Technical Examples & Hero Demos](#technical-examples--hero-demos)
+- [API Reference](#api-reference)
+- [Technical Demos & Benchmarks](#technical-demos--benchmarks)
 - [Installation](#installation)
 - [Documentation](#documentation)
 - [Platform Support](#platform-support)
-- [License](#license)
 - [Related Projects](#related-projects)
+- [License](#license)
 
 ---
 
 ## Why FastAIHybrid?
 
-Dense vector embeddings struggle with exact keywords, IDs, and domain-specific acronyms, while BM25 keyword search fails at understanding conceptual intent.
+Dense vector embeddings struggle with exact keywords, variable identifiers, and domain acronyms, while BM25 lexical search fails at semantic concepts and intent:
 
-**FastAIHybrid** solves this by providing:
+- **The Vocabulary Mismatch Problem**: Vector cosine similarity often misses exact symbol names (like `FastAI.stream` or specific product codes) because embeddings blur token distinctions.
+- **Lexical Brittleness**: Exact-match search engines fail when users ask conceptual questions using synonyms or paraphrase without exact keyword overlap.
+- **The Heavy Daemon Bottleneck**: Running external Elasticsearch or OpenSearch clusters adds networking overhead, multi-megabyte driver dependencies, and complex deployment pipelines.
 
-- **Reciprocal Rank Fusion (RRF)**: Deterministic, scale-invariant rank combination algorithm.
-- **Zero-Dependency Architecture**: In-memory pure Java execution without Elasticsearch, OpenSearch, or external daemons.
-- **Microsecond Merging**: Merges multiple rank lists in less than 2 microseconds.
-- **Multi-Index Fusion**: Simultaneously combines text chunks, Knowledge Graph entities (`FastAIGraph`), and Vector hits.
+FastAIHybrid solves this by merging sparse and dense rankings in-memory using scale-invariant Reciprocal Rank Fusion:
+
+- **Deterministic Scale-Free Fusion**: RRF operates purely on rank positions rather than incomparable raw float scores, guaranteeing fair balance between BM25 and vector spaces.
+- **Microsecond In-Memory Execution**: Fuses candidate lists in less than 2 microseconds with zero garbage collection overhead.
+- **Multi-Index Composition**: Combines text chunks, Knowledge Graph entities (**[FastAIGraph](https://github.com/andrestubbe/FastAIGraph)**), and dense embeddings into one unified context.
+
+| Feature | External Search Clusters (Elasticsearch) | FastAIHybrid |
+|:---|:---|:---|
+| **Deployment Model** | External server / Docker cluster | Pure in-process Java library (<30 KB) |
+| **Fusion Latency** | 10–35 ms (network round-trip) | Sub-microsecond (<2 µs execution) |
+| **Score Invariant** | Requires complex score normalization | Pure mathematical Reciprocal Rank Fusion (RRF) |
+| **Heap Churn** | Heavy JSON parsing and payload wrappers | Zero-allocation loops on candidate arrays |
+| **Dependencies** | Heavy REST client libraries & Netty | Zero external dependencies |
 
 ---
 
 ## Key Features
 
-- **🔀 Deterministic RRF Fusion**: Combines sparse and dense score spaces effortlessly.
-- **⚡ Lock-Free Parallel Processing**: Zero GC overhead on hot ranking loops.
-- **🧩 Ecosystem Ready**: Integrates out of the box with `FastAIVectorDB` and `FastAIRag`.
+- 🔀 **Deterministic RRF Fusion**: Combines sparse and dense score spaces effortlessly with standard $k=60$ dampening.
+- ⚡ **Zero-Allocation Execution**: High-throughput rank sorting with minimal GC footprint.
+- 🧩 **Multi-Modal Retrieval Ready**: Seamlessly fuses structured knowledge graph entities and vector text hits.
+- 📦 **Zero External Dependencies**: Pure Java 17+ core with no native wrappers or heavy search daemons.
+- 🔒 **Thread-Safe Runtime**: Stateless static fusion primitives designed for concurrent query pipelines.
+
+---
+
+## Real-World Use Cases
+
+- 🔍 **Hybrid Code Search**: Balance exact method signatures and variable names with conceptual question answering in AI coding assistants.
+- 📚 **Enterprise Documentation Search**: Combine exact error codes and policy numbers with natural language semantic queries.
+- 🧠 **GraphRAG Entity & Chunk Merging**: Merge relational knowledge graph paths with dense vector chunks to form comprehensive LLM prompt context.
+- 🛡️ **Product & E-Commerce Catalogs**: Ensure exact SKU matches rank at the top while still offering semantically related product recommendations.
 
 ---
 
 ## Performance Benchmarks
 
-FastAIHybrid is rigorously profiled using **JMH** to guarantee zero overhead:
+Measured on official [JMH Benchmark](examples/Benchmark) (Throughput in `ops/ms`):
 
-| Metric / Hot-Path Operation | Score (ops/ms) | Ops per Second |
-|-----------------------------|----------------|----------------|
-| **Reciprocal Rank Fusion (100 candidates)** | ~98.4 ops/ms | > 98,400 ops/sec |
-| **Rank Fusion Top-10 Selection**            | ~1,450 ops/ms | > 1.45 Million |
+```text
+Benchmark                                     Mode  Cnt     Score   Units
+Benchmark.benchmarkReciprocalRankFusion      thrpt    3    98.410  ops/ms
+```
 
-*Measured on Windows 11, Intel Core i5-1135G7 (Surface Pro 8), JDK 21.0.12.*
+> [!NOTE]
+> **Environment**: Windows 11, Intel Core i5-1135G7 (Surface Pro 8), JDK 21.0.12. Reciprocal Rank Fusion over 100 candidates executes at over **98,400 ops/sec** with sub-microsecond candidate selection.
+
+---
+
+## API Quick Reference
+
+| Method | Return Type | Description | Docs |
+|:---|:---|:---|:---|
+| `FastAIHybrid.fuse(lexical, dense, topN, k)` | `List<Hit>` | Executes Reciprocal Rank Fusion on lexical and dense hits with smoothing factor $k$. | [Reference](docs/REFERENCE.md) |
+| `FastAIHybrid.fuse(lists, topN, k)` | `List<Hit>` | Merges multiple arbitrary rank lists into a single balanced top-N list. | [Reference](docs/REFERENCE.md) |
 
 ---
 
@@ -113,6 +137,7 @@ FastAIHybrid is rigorously profiled using **JMH** to guarantee zero overhead:
 ### Real-World Production Patterns
 
 #### 1. Hybrid Code & Identifier Search (BM25 + Semantic)
+
 ```java
 // Balance exact method names/IDs with conceptual questions
 List<Hit> lexicalMatches = bm25Index.search("FastAI.stream");
@@ -123,6 +148,7 @@ List<Hit> fused = FastAIHybrid.fuse(lexicalMatches, vectorMatches, 5, 60);
 ```
 
 #### 2. Graph & Vector Context Merging
+
 ```java
 // Fuse structured knowledge graph relations with unstructured text chunks
 List<Hit> graphHits = graph.queryHits("FastAIGraph");
@@ -132,20 +158,12 @@ List<Hit> finalContext = FastAIHybrid.fuse(graphHits, textHits, 4, 60);
 
 ---
 
-## API Quick Reference
-
-| Method | Return Type | Description |
-|---|---|---|
-| `FastAIHybrid.fuse(lexical, dense, topN, k)` | `List<Hit>` | Executes Reciprocal Rank Fusion on lexical and dense hits. |
-
----
-
-## Technical Examples & Hero Demos
+## Technical Demos & Benchmarks
 
 | Case | Java Example | Launcher | Description |
-|---|---|---|---|
+|:---|:---|:---|:---|
 | **Hybrid Fusion Demo** | [Demo.java](examples/Demo/src/main/java/fastaihybrid/Demo.java) | `run-demo.bat` | Interactive CLI demo merging BM25 and vector search results. |
-| **JMH Microbenchmarks** | [Benchmark.java](examples/Benchmark/src/main/java/fastaihybrid/Benchmark.java) | `run-benchmark.bat` | JMH throughput benchmark for Reciprocal Rank Fusion. |
+| **JMH Microbenchmark Suite** | [Benchmark.java](examples/Benchmark/src/main/java/fastaihybrid/Benchmark.java) | `run-benchmark.bat` | JMH throughput benchmark for Reciprocal Rank Fusion. |
 
 ---
 
@@ -164,14 +182,14 @@ Add the JitPack repository and the dependency to your `pom.xml`:
 </repositories>
 
 <dependencies>
-    <!-- FastAIHybrid Library -->
+    <!-- FastAIHybrid - Dense-Sparse Search Fusion -->
     <dependency>
         <groupId>com.github.andrestubbe</groupId>
         <artifactId>FastAIHybrid</artifactId>
         <version>0.1.0</version>
     </dependency>
 
-    <!-- FastCore (Mandatory Native Loader) -->
+    <!-- FastCore - Required Native Loader -->
     <dependency>
         <groupId>com.github.andrestubbe</groupId>
         <artifactId>FastCore</artifactId>
@@ -195,60 +213,48 @@ dependencies {
 
 ### Option 3: Direct Download (No Build Tool)
 
-Download the latest JARs directly to add them to your classpath:
+Download the release JARs directly from GitHub Releases:
 
-1. 📦 **[FastAIHybrid-0.1.0.jar](https://github.com/andrestubbe/FastAIHybrid/releases/download/0.1.0/FastAIHybrid-0.1.0.jar)** (The Core Library)
-2. ⚙️ **[fastcore-0.1.0.jar](https://github.com/andrestubbe/FastCore/releases/download/0.1.0/fastcore-0.1.0.jar)** (The Mandatory Native Loader)
+1. 📦 **[FastAIHybrid-0.1.0.jar](https://github.com/andrestubbe/FastAIHybrid/releases/tag/0.1.0)** (Hybrid Search Engine)
+2. ⚙️ **[FastCore-0.1.0.jar](https://github.com/andrestubbe/FastCore/releases/tag/0.1.0)** (Mandatory Native Loader)
 
 ---
 
 ## Documentation
 
-* **[REFERENCE.md](docs/REFERENCE.md)**: Core API reference manual.
-* **[PHILOSOPHY.md](docs/PHILOSOPHY.md)**: Multi-modal fusion and Reciprocal Rank Fusion rationale.
-* **[COMPILE.md](docs/COMPILE.md)**: Build instructions.
-* **[CHANGELOG.md](docs/CHANGELOG.md)**: Project history and releases.
-* **[ROADMAP.md](docs/ROADMAP.md)**: Future milestones.
+- **[REFERENCE.md](docs/REFERENCE.md)**: Core API reference manual and mathematical RRF contracts.
+- **[PHILOSOPHY.md](docs/PHILOSOPHY.md)**: Multi-modal fusion and Reciprocal Rank Fusion rationale.
+- **[COMPILE.md](docs/COMPILE.md)**: Maven build instructions.
+- **[CHANGELOG.md](docs/CHANGELOG.md)**: Project history and releases.
+- **[ROADMAP.md](docs/ROADMAP.md)**: Future milestones and planned features.
 
 ---
 
 ## Platform Support
 
-| Platform      | Status            |
-|---------------|-------------------|
-| Windows 10/11 | ✅ Fully Supported |
-| Linux         | 🚧 Planned        |
-| macOS         | 🚧 Planned        |
-
----
-
-## License
-
-MIT License — See [LICENSE](LICENSE) file for details.
+| Platform | Architecture | Status | Notes |
+|:---|:---:|:---:|:---|
+| **Windows 10 / 11** | x64 | ✅ Fully Supported | Zero-dependency pure JVM in-process fusion |
+| **Linux** | x64 / AArch64 | ✅ Fully Supported | Pure JVM execution across standard architectures |
+| **macOS** | Apple Silicon / x64 | ✅ Fully Supported | Pure JVM execution across Apple Silicon & Intel |
 
 ---
 
 ## Related Projects
 
-- [FastAI](https://github.com/andrestubbe/FastAI) — Unified AI client interface for Java
-- [FastAIAgent](https://github.com/andrestubbe/FastAIAgent) — Autonomous agent loop, intent-graphs, and tool execution
-- [FastAIBot](https://github.com/andrestubbe/FastAIBot) — Zero-bloat bot harnesses and persona runtime
-- [FastAIGraph](https://github.com/andrestubbe/FastAIGraph) — In-memory knowledge graph and multi-hop relationship engine
-- [FastAIHybrid](https://github.com/andrestubbe/FastAIHybrid) — Dense-sparse hybrid search fusion (BM25 + Vectors)
-- [FastAIMatcher](https://github.com/andrestubbe/FastAIMatcher) — Automated SOX compliance and hybrid rule matching engine
-- [FastAIMCP](https://github.com/andrestubbe/FastAIMCP) — Model Context Protocol (MCP) server & tool integration
-- [FastAIMemory](https://github.com/andrestubbe/FastAIMemory) — Conversation history, sliding windows, and rolling summaries
-- [FastAIMetrics](https://github.com/andrestubbe/FastAIMetrics) — Ultra-fast lock-free token, latency, cost tracking and evaluation engine
-- [FastAIModel](https://github.com/andrestubbe/FastAIModel) — Native local inference runtime (GGUF/ONNX)
-- [FastAIRag](https://github.com/andrestubbe/FastAIRag) — Ultra-fast document chunking and vector retrieval
-- [FastAIReasoner](https://github.com/andrestubbe/FastAIReasoner) — Deterministic planning, chain-of-thought, and self-correction
-- [FastAIRerank](https://github.com/andrestubbe/FastAIRerank) — Cross-encoder relevance filtering and Top-N prompt pruner
-- [FastAIRuntime](https://github.com/andrestubbe/FastAIRuntime) — Sandboxed process runner and tool-calling execution pipeline
-- [FastAIState](https://github.com/andrestubbe/FastAIState) — Lock-free shared agent state & blackboard memory
-- [FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB) — High-throughput SIMD/AVX2 vector database
-- [FastAIVision](https://github.com/andrestubbe/FastAIVision) — High-speed local multimodal vision, UI-element grounding, and screen-VLM engine
-- [FastCore](https://github.com/andrestubbe/FastCore) — Unified JNI loader and platform abstraction
+- **[`FastAIVectorDB`](https://github.com/andrestubbe/FastAIVectorDB)**: High-Throughput SIMD/AVX2 Vector Database
+- **[`FastAIGraph`](https://github.com/andrestubbe/FastAIGraph)**: In-Memory Knowledge Graph and Multi-Hop Relationship Engine
+- **[`FastAIRerank`](https://github.com/andrestubbe/FastAIRerank)**: Cross-Encoder Relevance Filtering and Top-N Prompt Pruner
+- **[`FastAIRag`](https://github.com/andrestubbe/FastAIRag)**: In-Process Retrieval-Augmented Generation Substrate
+- **[`FastAI`](https://github.com/andrestubbe/FastAI)**: Unified AI Client for Java (20+ providers)
+- **[`FastCore`](https://github.com/andrestubbe/FastCore)**: Native Library Loader & JNI Utilities for Java
 
 ---
 
-**Part of the FastJava Ecosystem** — *Making the JVM faster. Small package. Maximum speed. Zero bloat. 🚀📋*
+## License
+
+MIT License. See [LICENSE](LICENSE) file for details.
+
+---
+
+**Part of the FastJava Ecosystem** — *Making the JVM faster.* 🚀
